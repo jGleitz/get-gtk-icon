@@ -1,0 +1,16 @@
+{
+  "name": "get-gtk-icon",
+  "version": "1.0.0-dev",
+  "description": "Obtains an application’s icon according to the user’s GTK theme.",
+  "repository": "https://github.com/jGleitz/get-gtk-icon",
+  "main": "src/main/js/get-gtk-icon.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node-gyp configure build"
+  },
+  "author": "Joshua Gleitze (dev@joshuagleitze.de)",
+  "license": "MIT",
+  "devDependencies": {
+    "node-gyp": "^3.6.2"
+  }
+}
