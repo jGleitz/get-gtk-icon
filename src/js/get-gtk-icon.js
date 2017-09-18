@@ -16,6 +16,7 @@ function getIconPath(name, size, callback) {
 	const callbacktype = typeof callback;
 	if (callbacktype === 'function') {
 		cppgeticon.getIcon(name, size, wrapSimple(callback));
+		return undefined;
 	} else if (callbacktype === 'undefined') {
 		return new Promise((resolve, reject) => {
 			cppgeticon.getIcon(name, size, wrap(resolve, reject));
@@ -25,24 +26,27 @@ function getIconPath(name, size, callback) {
 	}
 }
 
+// callbacks must be called with a clear stack. Promise callbacks will fail
+// otherwise.
+
 function wrapSimple(callback) {
-	return result => {
+	return result => setImmediate(() => {
 		if (result === null) {
 			callback(new Error("No icon found"), null);
 		} else {
 			callback(null, result);
 		}
-	}
+	})
 }
 
 function wrap(resolve, reject) {
-	return result => {
+	return result => setImmediate(() => {
 		if (result === null) {
 			reject(new Error("No icon found"));
 		} else {
 			resolve(result);
 		}
-	}
+	})
 }
 
 function getIconPathSync(name, size) {

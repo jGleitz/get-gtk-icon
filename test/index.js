@@ -7,10 +7,19 @@ chai.use(chaiAsPromised);
 const should = chai.should();
 const file = chaiFiles.file;
 
-const gtk =  require('..');
+const gtk = require('..');
 
 describe('gtk-get-icon', () => {
 	describe('promise', () => {
+		it('queries an icon', () =>
+			gtk.getIconPath('folder', 32)
+				.then(folderPath => {
+					folderPath.should.exist;
+					file(folderPath).should.exist;
+				}))
+
+		it('rejects for non-existing icons' , () =>
+			gtk.getIconPath('i-dont-exist', 32).should.be.rejected)
 	})
 
 	describe('callback', () => {
@@ -31,12 +40,6 @@ describe('gtk-get-icon', () => {
 			});
 		})
 	})
-	/*it('queries an icon via promise', () =>
-		gtk.getIconPath('folder', 32)
-			.then(path => file(path))
-
-			.should.eventually.exist
-	);*/
 
 	describe('synchronous', () => {
 		it('queries an icon', () => {
