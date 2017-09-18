@@ -20,6 +20,12 @@ describe('gtk-get-icon', () => {
 
 		it('rejects for non-existing icons' , () =>
 			gtk.getIconPath('i-dont-exist', 32).should.be.rejected)
+
+		it('checks arguments', () => {
+			(() => gtk.getIconPath()).should.throw;
+			(() => gtk.getIconPath(undefined, 32)).should.throw;
+			(() => gtk.getIconPath('folder', '32px')).should.throw;
+		})
 	})
 
 	describe('callback', () => {
@@ -39,6 +45,13 @@ describe('gtk-get-icon', () => {
 				done();
 			});
 		})
+
+		it('checks arguments', () => {
+			(() => gtk.getIconPath()).should.throw;
+			(() => gtk.getIconPath(undefined, 32)).should.throw;
+			(() => gtk.getIconPath('folder', '32px')).should.throw;
+			(() => gtk.getIconPath('folder', 32, 'not a function')).should.throw;
+		})
 	})
 
 	describe('synchronous', () => {
@@ -50,7 +63,13 @@ describe('gtk-get-icon', () => {
 
 		it('returns null for non-existing icons', () => {
 			const folderIconPath = gtk.getIconPathSync('i-dont-exist', 32);
-			should.equal(null, folderIconPath);
+			should.not.exist(folderIconPath);
+		})
+
+		it('ckecksArguments', () => {
+			(() => gtk.getIconPathSync()).should.throw;
+			(() => gtk.getIconPathSync(undefined, 32)).should.throw;
+			(() => gtk.getIconPathSync('folder', '32px')).should.throw;
 		})
 	})
 });
