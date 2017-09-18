@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - node
+  - 8
+  - 6
+
+before_script:
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - mkdir -p ~/.config/gtk-3.0
+  - echo -e "[Settings]\ngtk-icon-theme-name=Tango" >> ~/.config/gtk-3.0/settings.ini
+
+addons:
+  apt:
+    packages:
+      - libgtk-3-dev
+      - tango-icon-theme
