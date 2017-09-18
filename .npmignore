@@ -1,0 +1,7 @@
+/test/
+/src/c++/
+/build/*
+!/build/Release/
+
+.travis.yml
+binding.gyp
