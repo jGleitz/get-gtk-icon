@@ -1,22 +1,21 @@
 #include <uv.h>
 #include <node.h>
 #include <gtk/gtk.h>
-#include <string.h>
+#include <string>
 
 namespace getgtkicon {
 	using namespace v8;
-	using namespace std;
 
 	struct IconRequest {
 		uv_work_t uvRequest;
 		Persistent<Function> callback;
 
-		string* iconName;
+		std::string* iconName;
 		uint32_t iconSize;
-		string* iconPath;
+		std::string* iconPath;
 	};
 
-	const char* getIcon(const string* iconName, uint32_t iconSize) {
+	const char* getIcon(const std::string* iconName, uint32_t iconSize) {
 		gtk_init(0, NULL);
 		GtkIconTheme* defaultIconTheme = gtk_icon_theme_get_default();
 		GtkIconInfo* iconInfo =
@@ -35,7 +34,7 @@ namespace getgtkicon {
 		return String::NewFromUtf8(isolate, iconPath);
 	}
 
-	static Local<Value> toJs(string* iconPath, Isolate* isolate) {
+	static Local<Value> toJs(std::string* iconPath, Isolate* isolate) {
 		if (iconPath == NULL) {
 			return Null(isolate);
 		}
@@ -46,7 +45,7 @@ namespace getgtkicon {
 		IconRequest* request = static_cast<IconRequest*>(work->data);
 		const char* iconPath = getIcon(request->iconName, request->iconSize);
 		if (iconPath != NULL) {
-			request->iconPath = new string(iconPath);
+			request->iconPath = new std::string(iconPath);
 		}
 	}
 
@@ -72,7 +71,7 @@ namespace getgtkicon {
 		IconRequest* request = new IconRequest();
 		request->uvRequest.data = request;
 
-		request->iconName = new string(*v8::String::Utf8Value(args[0]));
+		request->iconName = new std::string(*v8::String::Utf8Value(args[0]));
 		request->iconSize = args[1]->Uint32Value();
 		request->callback.Reset(isolate, args[2].As<Function>());
 
@@ -84,7 +83,7 @@ namespace getgtkicon {
 	void syncGetIcon(const FunctionCallbackInfo<Value>& args) {
 		Isolate* isolate = args.GetIsolate();
 
-		string iconName = string(*v8::String::Utf8Value(args[0]));
+		std::string iconName = std::string(*v8::String::Utf8Value(args[0]));
 		uint32_t iconSize = args[1]->Uint32Value();
 		const char* iconPath = getIcon(&iconName, iconSize);
 		Local<Value> jsIconPath = toJs(iconPath, isolate);
