@@ -3,5 +3,6 @@
 /build/*
 !/build/Release/
 
-.travis.yml
-binding.gyp
+/.travis.yml
+/binding.gyp
+/get-gtk-icon-*.tgz
