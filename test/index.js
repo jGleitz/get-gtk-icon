@@ -10,66 +10,91 @@ const file = chaiFiles.file;
 const gtk = require('..');
 
 describe('gtk-get-icon', () => {
-	describe('promise', () => {
-		it('queries an icon', () =>
-			gtk.getIconPath('folder', 32)
-				.then(folderPath => {
-					folderPath.should.exist;
-					file(folderPath).should.exist;
-				}))
 
-		it('rejects for non-existing icons' , () =>
-			gtk.getIconPath('i-dont-exist', 32).should.be.rejected)
+	describe('GTK check', () => {
+		it('has the same result for sync, async, and callback', done => {
+			gtk.hasGtk3((_, callbackResult) => {
+				gtk.hasGtk3().then(promiseResult => {
+					const syncResult = gtk.hasGtk3Sync();
+					promiseResult.should.equal(callbackResult);
+					callbackResult.should.equal(syncResult);
+				}).then(done, error => done(error))
+			})
+		});
+	});
 
-		it('checks arguments', () => {
-			(() => gtk.getIconPath()).should.throw;
-			(() => gtk.getIconPath(undefined, 32)).should.throw;
-			(() => gtk.getIconPath('folder', '32px')).should.throw;
-		})
-	})
+	describe('with GTK', () => {
 
-	describe('callback', () => {
-		it('queries an icon', done => {
-			gtk.getIconPath('folder', 32, (err, folderIconPath) => {
-				should.not.exist(err);
-				should.exist(folderIconPath);
-				file(folderIconPath).should.exist;
-				done();
+		before(function() {
+			const testSuite = this;
+			gtk.hasGtk3()
+				.then(hasGtk => {
+					if (!hasGtk) {testSuite.skip();}
+				})
+		});
+
+		describe('promise', () => {
+			it('queries an icon', () =>
+				gtk.getIconPath('folder', 32)
+					.then(folderPath => {
+						folderPath.should.exist;
+						file(folderPath).should.exist;
+					})
+			);
+
+			it('rejects for non-existing icons' , () =>
+				gtk.getIconPath('i-dont-exist', 32).should.be.rejected);
+
+			it('checks arguments', () => {
+				(() => gtk.getIconPath()).should.throw;
+				(() => gtk.getIconPath(undefined, 32)).should.throw;
+				(() => gtk.getIconPath('folder', '32px')).should.throw;
 			});
 		});
 
-		it('returns an error for non-existing icons', done => {
-			gtk.getIconPath('i-dont-exist', 32, (err, folderIconPath) => {
-				should.exist(err);
-				should.not.exist(folderIconPath);
-				done();
+		describe('callback', () => {
+			it('queries an icon', done => {
+				gtk.getIconPath('folder', 32, (err, folderIconPath) => {
+					should.not.exist(err);
+					should.exist(folderIconPath);
+					file(folderIconPath).should.exist;
+					done();
+				});
 			});
-		})
 
-		it('checks arguments', () => {
-			(() => gtk.getIconPath()).should.throw;
-			(() => gtk.getIconPath(undefined, 32)).should.throw;
-			(() => gtk.getIconPath('folder', '32px')).should.throw;
-			(() => gtk.getIconPath('folder', 32, 'not a function')).should.throw;
-		})
-	})
+			it('returns an error for non-existing icons', done => {
+				gtk.getIconPath('i-dont-exist', 32, (err, folderIconPath) => {
+					should.exist(err);
+					should.not.exist(folderIconPath);
+					done();
+				});
+			});
 
-	describe('synchronous', () => {
-		it('queries an icon', () => {
-			const folderIconPath = gtk.getIconPathSync('folder', 32);
-			should.exist(folderIconPath);
-			file(folderIconPath).should.exist;
-		})
+			it('checks arguments', () => {
+				(() => gtk.getIconPath()).should.throw;
+				(() => gtk.getIconPath(undefined, 32)).should.throw;
+				(() => gtk.getIconPath('folder', '32px')).should.throw;
+				(() => gtk.getIconPath('folder', 32, 'not a function')).should.throw;
+			});
+		});
 
-		it('returns null for non-existing icons', () => {
-			const folderIconPath = gtk.getIconPathSync('i-dont-exist', 32);
-			should.not.exist(folderIconPath);
-		})
+		describe('synchronous', () => {
+			it('queries an icon', () => {
+				const folderIconPath = gtk.getIconPathSync('folder', 32);
+				should.exist(folderIconPath);
+				file(folderIconPath).should.exist;
+			});
 
-		it('ckecksArguments', () => {
-			(() => gtk.getIconPathSync()).should.throw;
-			(() => gtk.getIconPathSync(undefined, 32)).should.throw;
-			(() => gtk.getIconPathSync('folder', '32px')).should.throw;
-		})
-	})
+			it('returns null for non-existing icons', () => {
+				const folderIconPath = gtk.getIconPathSync('i-dont-exist', 32);
+				should.not.exist(folderIconPath);
+			});
+
+			it('ckecksArguments', () => {
+				(() => gtk.getIconPathSync()).should.throw;
+				(() => gtk.getIconPathSync(undefined, 32)).should.throw;
+				(() => gtk.getIconPathSync('folder', '32px')).should.throw;
+			});
+		});
+	});
 });
