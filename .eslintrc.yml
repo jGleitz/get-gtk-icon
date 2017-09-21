@@ -6,17 +6,17 @@ parserOptions:
   sourceType: module
 rules:
   indent:
-    - error
+    - warn
     - tab
   linebreak-style:
     - error
     - unix
   quotes:
-    - error
+    - warn
     - single
   semi:
-    - error
+    - warn
     - always
   keyword-spacing:
-      - error
+      - warn
       - before: true
