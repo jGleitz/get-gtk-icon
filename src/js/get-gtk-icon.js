@@ -1,4 +1,5 @@
 const child_process = require('child_process');
+const os = require('os');
 
 let cppgeticon;
 let searchedGtk3 = false;
@@ -10,25 +11,22 @@ function hasGtk3(callback) {
 		// Node.js is single-threaded so this is not a race condition.
 		searchedGtk3 = true;
 		gtkSearchPromise = new Promise(resolve => {
+			if (!isSupportedOs()) resolve(false);
 			child_process.spawn('pkg-config', ['gtk+-3.0'])
 				.on('exit', code => {
-					foundGtk3 = code === 0;
-					resolve(foundGtk3);
+					resolve(code === 0);
 				});
-		});
+		}).then(result => foundGtk3 = result);
 	}
-	if (gtkSearchPromise) {
-		const callbacktype = typeof callback;
-		if (callbacktype === 'function') {
-			gtkSearchPromise.then(result => callback(null, result), error => callback(error));
-			return undefined;
-		} else if (callbacktype === 'undefined') {
-			return gtkSearchPromise;
-		} else {
-			throw new Error('The provided callback was not a function!');
-		}
+	let resultPromise = gtkSearchPromise || Promise.resolve(foundGtk3);
+	const callbacktype = typeof callback;
+	if (callbacktype === 'function') {
+		resultPromise.then(result => callback(null, result), error => callback(error));
+		return undefined;
+	} else if (callbacktype === 'undefined') {
+		return resultPromise;
 	} else {
-		return Promise.resolve(foundGtk3);
+		throw new Error('The provided callback was not a function!');
 	}
 }
 
@@ -37,9 +35,14 @@ function hasGtk3Sync() {
 		// if there’s already a pending async call, we will do the work two times.
 		// But clients really shouldn’t do that, should they?
 		searchedGtk3 = true;
-		foundGtk3 = child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0;
+		foundGtk3 = isSupportedOs() && child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0;
 	}
 	return foundGtk3;
+}
+
+function isSupportedOs() {
+	// we currently only support linux 64 bit
+	return os.platform() === 'linux' && os.arch() === 'x64';
 }
 
 function getIconPath(name, size, callback) {
