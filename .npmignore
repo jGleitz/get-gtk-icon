@@ -7,5 +7,6 @@
 /.travis.yml
 /binding.gyp
 /get-gtk-icon-*.tgz
+/prepare-test-travis-linux.sh
 
 .eslintrc.*
