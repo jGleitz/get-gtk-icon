@@ -8,6 +8,8 @@ const should = chai.should();
 const file = chaiFiles.file;
 
 const gtk = require('..');
+const knownIfGtk = typeof process.env.HAS_GTK3 !== 'undefined';
+const expectedToHaveGtk = process.env.HAS_GTK3 == 'TRUE';
 
 describe('gtk-get-icon', () => {
 
@@ -18,19 +20,26 @@ describe('gtk-get-icon', () => {
 					const syncResult = gtk.hasGtk3Sync();
 					promiseResult.should.equal(callbackResult);
 					callbackResult.should.equal(syncResult);
-				}).then(done, error => done(error))
-			})
+				}).then(done, error => done(error));
+			});
 		});
+
+		if (knownIfGtk) {
+			it(`has the correct result for this environment (${expectedToHaveGtk})`, () => {
+				gtk.hasGtk3Sync().should.equal(expectedToHaveGtk);
+			});
+		}
+
 	});
 
 	describe('with GTK', () => {
 
 		before(function() {
 			const testSuite = this;
-			gtk.hasGtk3()
+			return gtk.hasGtk3()
 				.then(hasGtk => {
 					if (!hasGtk) {testSuite.skip();}
-				})
+				});
 		});
 
 		describe('promise', () => {
