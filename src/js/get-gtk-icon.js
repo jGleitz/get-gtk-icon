@@ -92,7 +92,7 @@ function checkGtk() {
 	if (!hasGtk3()) {
 		throw new Error('This system does not provide gtk 3!');
 	}
-	cppgeticon = cppgeticon || require('bindings')('geticon.node');
+	cppgeticon = cppgeticon || require('bindings')('gtkicon.node');
 }
 
 module.exports = {
