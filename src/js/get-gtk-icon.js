@@ -35,7 +35,8 @@ function hasGtk3Sync() {
 		// if there’s already a pending async call, we will do the work two times.
 		// But clients really shouldn’t do that, should they?
 		searchedGtk3 = true;
-		foundGtk3 = isSupportedOs() && child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0;
+		foundGtk3 = isSupportedOs()
+			&& child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0;
 	}
 	return foundGtk3;
 }
@@ -47,12 +48,16 @@ function isSupportedOs() {
 
 function getIconPath(name, size, callback) {
 	checkFirstTwoArgs(name, size);
-	checkGtk();
 
 	const callbacktype = typeof callback;
-	const iconPromise = new Promise((resolve, reject) => {
-		cppgeticon.getIcon(name, size, wrap(resolve, reject));
-	});
+	const iconPromise = hasGtk3()
+		.then(hasGtk => new Promise((resolve, reject) => {
+			if (!hasGtk) {
+				reject(new Error('Cannot obtain icons from GTK 3 on this system!'));
+			}
+			loadCppModule();
+			cppgeticon.getIcon(name, size, wrap(resolve, reject));
+		}));
 	if (callbacktype === 'function') {
 		iconPromise.then(result => callback(null, result), error => callback(error));
 		return undefined;
@@ -77,9 +82,16 @@ function wrap(resolve, reject) {
 
 function getIconPathSync(name, size) {
 	checkFirstTwoArgs(name, size);
-	checkGtk();
+	if (!hasGtk3Sync()) {
+		throw new Error('Cannot obtain icons from GTK 3 on this system!');
+	}
+	loadCppModule();
 
 	return cppgeticon.getIconSync(name, size);
+}
+
+function loadCppModule() {
+	cppgeticon = cppgeticon || require('bindings')('gtkicon.node');
 }
 
 function checkFirstTwoArgs(iconName, iconSize) {
@@ -89,13 +101,6 @@ function checkFirstTwoArgs(iconName, iconSize) {
 	if (typeof iconSize !== 'number') {
 		throw new Error('The icon size must be a number!');
 	}
-}
-
-function checkGtk() {
-	if (!hasGtk3()) {
-		throw new Error('This system does not provide gtk 3!');
-	}
-	cppgeticon = cppgeticon || require('bindings')('gtkicon.node');
 }
 
 module.exports = {
