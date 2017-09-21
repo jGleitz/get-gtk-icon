@@ -9,12 +9,12 @@ function hasGtk3(callback) {
 	if (!searchedGtk3) {
 		// Node.js is single-threaded so this is not a race condition.
 		searchedGtk3 = true;
-		gtkSearchPromise = new Promise((resolve, reject) => {
+		gtkSearchPromise = new Promise(resolve => {
 			child_process.spawn('pkg-config', ['gtk+-3.0'])
 				.on('exit', code => {
 					foundGtk3 = code === 0;
 					resolve(foundGtk3);
-				})
+				});
 		});
 	}
 	if (gtkSearchPromise) {
@@ -37,7 +37,7 @@ function hasGtk3Sync() {
 		// if there’s already a pending async call, we will do the work two times.
 		// But clients really shouldn’t do that, should they?
 		searchedGtk3 = true;
-		foundGtk3 = child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0
+		foundGtk3 = child_process.spawnSync('pkg-config', ['gtk+-3.0']).status === 0;
 	}
 	return foundGtk3;
 }
@@ -65,11 +65,11 @@ function getIconPath(name, size, callback) {
 function wrap(resolve, reject) {
 	return result => setImmediate(() => {
 		if (result === null) {
-			reject(new Error("No icon found"));
+			reject(new Error('No icon found'));
 		} else {
 			resolve(result);
 		}
-	})
+	});
 }
 
 function getIconPathSync(name, size) {
@@ -100,4 +100,4 @@ module.exports = {
 	getIconPath,
 	hasGtk3Sync,
 	getIconPathSync
-}
+};
