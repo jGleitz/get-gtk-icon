@@ -15,9 +15,9 @@ describe('gtk-get-icon', () => {
 
 	describe('GTK check', () => {
 		it('has the same result for sync, async, and callback', done => {
-			gtk.hasGtk3((_, callbackResult) => {
-				gtk.hasGtk3().then(promiseResult => {
-					const syncResult = gtk.hasGtk3Sync();
+			gtk.canQueryIcons((_, callbackResult) => {
+				gtk.canQueryIcons().then(promiseResult => {
+					const syncResult = gtk.canQueryIconsSync();
 					promiseResult.should.equal(callbackResult);
 					callbackResult.should.equal(syncResult);
 				}).then(done, error => done(error));
@@ -26,7 +26,7 @@ describe('gtk-get-icon', () => {
 
 		if (knownIfGtk) {
 			it(`has the correct result for this environment (${expectedToHaveGtk})`, () => {
-				gtk.hasGtk3Sync().should.equal(expectedToHaveGtk);
+				gtk.canQueryIconsSync().should.equal(expectedToHaveGtk);
 			});
 		}
 
@@ -108,7 +108,7 @@ describe('gtk-get-icon', () => {
 
 function skipIfNoGtk() {
 	const testSuite = this;
-	if ((knownIfGtk && !expectedToHaveGtk) || !gtk.hasGtk3Sync()) {
+	if ((knownIfGtk && !expectedToHaveGtk) || !gtk.canQueryIconsSync()) {
 		testSuite.skip();
 	}
 }

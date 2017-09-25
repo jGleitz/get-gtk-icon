@@ -6,7 +6,7 @@ let searchedGtk3 = false;
 let foundGtk3 = true;
 let gtkSearchPromise;
 
-function hasGtk3(callback) {
+function canQueryIcons(callback) {
 	if (!searchedGtk3) {
 		// Node.js is single-threaded so this is not a race condition.
 		searchedGtk3 = true;
@@ -30,7 +30,7 @@ function hasGtk3(callback) {
 	}
 }
 
-function hasGtk3Sync() {
+function canQueryIconsSync() {
 	if (!searchedGtk3) {
 		// if there’s already a pending async call, we will do the work two times.
 		// But clients really shouldn’t do that, should they?
@@ -50,7 +50,7 @@ function getIconPath(name, size, callback) {
 	checkFirstTwoArgs(name, size);
 
 	const callbacktype = typeof callback;
-	const iconPromise = hasGtk3()
+	const iconPromise = canQueryIcons()
 		.then(hasGtk => new Promise((resolve, reject) => {
 			if (!hasGtk) {
 				reject(new Error('Cannot obtain icons from GTK 3 on this system!'));
@@ -82,7 +82,7 @@ function wrap(resolve, reject) {
 
 function getIconPathSync(name, size) {
 	checkFirstTwoArgs(name, size);
-	if (!hasGtk3Sync()) {
+	if (!canQueryIconsSync()) {
 		throw new Error('Cannot obtain icons from GTK 3 on this system!');
 	}
 	loadCppModule();
@@ -104,8 +104,8 @@ function checkFirstTwoArgs(iconName, iconSize) {
 }
 
 module.exports = {
-	hasGtk3,
+	canQueryIcons,
 	getIconPath,
-	hasGtk3Sync,
+	canQueryIconsSync,
 	getIconPathSync
 };
