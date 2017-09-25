@@ -34,15 +34,9 @@ describe('gtk-get-icon', () => {
 
 	describe('with GTK', () => {
 
-		before(function() {
-			const testSuite = this;
-			return gtk.hasGtk3()
-				.then(hasGtk => {
-					if (!hasGtk) {testSuite.skip();}
-				});
-		});
-
 		describe('promise', () => {
+			before(skipIfNoGtk);
+
 			it('queries an icon', () =>
 				gtk.getIconPath('folder', 32)
 					.then(folderPath => {
@@ -62,6 +56,8 @@ describe('gtk-get-icon', () => {
 		});
 
 		describe('callback', () => {
+			before(skipIfNoGtk);
+
 			it('queries an icon', done => {
 				gtk.getIconPath('folder', 32, (err, folderIconPath) => {
 					should.not.exist(err);
@@ -88,6 +84,8 @@ describe('gtk-get-icon', () => {
 		});
 
 		describe('synchronous', () => {
+			before(skipIfNoGtk);
+
 			it('queries an icon', () => {
 				const folderIconPath = gtk.getIconPathSync('folder', 32);
 				should.exist(folderIconPath);
@@ -107,3 +105,10 @@ describe('gtk-get-icon', () => {
 		});
 	});
 });
+
+function skipIfNoGtk() {
+	const testSuite = this;
+	if ((knownIfGtk && !expectedToHaveGtk) || !gtk.hasGtk3Sync()) {
+		testSuite.skip();
+	}
+}
