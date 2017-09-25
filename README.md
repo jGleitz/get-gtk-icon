@@ -11,7 +11,7 @@ The package will return icons on 64bit Linux with GTK3 installed. It offers func
 Returns a promise for the path of the icon called `name` in the current user’s icon theme. The icon will be selected based on the desired `size`.
 Will provide the result to the node-style `callback`, if provided.
 
-Calling this function will return in a rejected promise (or an error to the callback) if `canQueryIcons` returns `false`. The result is `null` if the icon is not known.
+Calling this function will return in a rejected promise (or an error to the callback) if `canQueryIcons` returns `false` or no icon could be found for the given name and size.
 
 ### getIconPathSync(name, size)
 
