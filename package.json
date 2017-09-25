@@ -1,6 +1,6 @@
 {
   "name": "get-gtk-icon",
-  "version": "1.0.0",
+  "version": "1.0.1-dev",
   "description": "Obtains an application’s icon according to the user’s GTK theme.",
   "repository": "https://github.com/jGleitz/get-gtk-icon",
   "main": "src/js/get-gtk-icon.js",
