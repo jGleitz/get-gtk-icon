@@ -1,5 +1,7 @@
 # Retrieve GTK3 icons from Node.JS [![Build Status](https://travis-ci.org/jGleitz/get-gtk-icon.svg?branch=master)](https://travis-ci.org/jGleitz/get-gtk-icon)
 
+:warning: **Not maintained**. I do not maintain this project anymore.
+
 Allows to query icons from the user’s GTK3 theme from Node JS.
 
 The package will return icons on 64bit Linux with GTK3 installed. It offers functions to check whether icons can be queried on the current system.
